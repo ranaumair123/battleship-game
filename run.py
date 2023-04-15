@@ -1,19 +1,46 @@
-import random
-import time
 
-# Your code goes here.
-# You can delete these comments, but do not change the name of this file
-# Write your code to expect a terminal of 80 characters wide and 24 rows high
-HIDDEN_BOARD = [[' '] * 8 for x in range(8)]
-GUESS_BOARD = [[' '] * 8 for x in range(8)]
+from random import randint
 
-letter_to_numbers = {'A': 0, 'B': 1, 'C': 2, 'D': 3, 'E': 4, 'F':5, 'G':6, 'H':7}
+game_board = []
 
-def print_board(board):
-    print(' A B C D E F G H')
-    print(' ---------------')
+for x in range(5):
+    game_board.append(["O"] * 5)
 
-    row_number = 1
-    for row in board:
-        print("%d|%s|" %(row_number, "|".join(row)))
-        row 
+def print_game_board(game_board):
+    for row in game_board:
+        print(" ".join(row))
+
+print("Let's play Battleship!")
+print_game_board(game_board)
+
+def random_row(game_board):
+    return randint(0, len(game_board) - 1)
+
+def random_col(game_board):
+    return randint(0, len(game_board[0]) - 1)
+
+ship_row = random_row(game_board)
+ship_col = random_col(game_board)
+# Uncomment the following lines for debugging purposes:
+print(ship_row)
+print(ship_col)
+
+for turn in range(4):
+    print("Turn", turn + 1)
+    guess_row = int(input("Guess Row:"))
+    guess_col = int(input("Guess Col:"))
+
+    if guess_row == ship_row and guess_col == ship_col:
+        print("Congratulations! You sunk my battleship!")
+        break
+    else:
+        if (guess_row < 0 or guess_row > 4) or (guess_col < 0 or guess_col > 4):
+            print("Oops, that's not even in the ocean.")
+        elif(game_board[guess_row][guess_col] == "X"):
+            print("You guessed that one already.")
+        else:
+            print("You missed my battleship!")
+            game_board[guess_row][guess_col] = "X"
+        if (turn == 3):
+            print("Game Over")
+        print_game_board(game_board)
