@@ -1,74 +1,95 @@
-import random
+# Import the randint function from the random module
+from random import randint
 
+# Board for holding ship locations
+HIDDEN_BOARD = [[" "] * 8 for x in range(8)]
+# Board for displaying hits and misses
+GUESS_BOARD = [[" "] * 8 for i in range(8)]
 
+# Function to print the game board
+def print_board(board):
+    print("  A B C D E F G H")
+    print("  +-+-+-+-+-+-+-+")
+    row_number = 1
+    for row in board:
+        print("%d|%s|" % (row_number, "|".join(row)))
+        row_number += 1
 
-player_grid =   [[11,  12,  13,  14,  15,  16,  17,  18],
-                 [21,  22,  23,  24,  25,  26,  27,  28],
-                 [31,  32,  33,  34,  35,  36,  37,  38],
-                 [41,  42,  43,  44,  45,  46,  47,  48],
-                 [51,  52,  53,  54,  55,  56,  57,  58],
-                 [61,  62,  63,  64,  65,  66,  67,  68],
-                 [71,  72,  73,  74,  75,  76,  77,  78],
-                 [81,  82,  83,  84,  85,  86,  87,  88]]
+# Dictionary to map letters to numbers for column input
+letters_to_numbers = {
+    'A': 0,
+    'B': 1,
+    'C': 2,
+    'D': 3,
+    'E': 4,
+    'F': 5,
+    'G': 6,
+    'H': 7
+}
 
+# Function to create the ships on the board
+def create_ships(board):
+    for ship in range(5):
+        # Get a random row and column for the ship location
+        ship_row, ship_column = randint(0,7), randint(0,7)
+        # Check if a ship already exists at that location, if so, get new location
+        while board[ship_row][ship_column] == "X":
+            ship_row, ship_column = get_ship_location()
+        # Place the ship on the board
+        board[ship_row][ship_column] = "X"
 
-computer_grid = [[11,  12,  13,  14,  15,  16,  17,  18],
-                 [21,  22,  23,  24,  25,  26,  27,  28],
-                 [31,  32,  33,  34,  35,  36,  37,  38],
-                 [41,  42,  43,  44,  45,  46,  47,  48],
-                 [51,  52,  53,  54,  55,  56,  57,  58],
-                 [61,  62,  63,  64,  65,  66,  67,  68],
-                 [71,  72,  73,  74,  75,  76,  77,  78],
-                 [81,  82,  83,  84,  85,  86,  87,  88]]
+# Function to get the row and column input from the player
+def get_ship_location():
+    row = input("Enter the row of the ship: ").upper()
+    while row not in "12345678":
+        print('Not an appropriate choice, please select a valid row')
+        row = input("Enter the row of the ship: ").upper()
+    column = input("Enter the column of the ship: ").upper()
+    while column not in "ABCDEFGH":
+        print('Not an appropriate choice, please select a valid column')
+        column = input("Enter the column of the ship: ").upper()
+    return int(row) - 1, letters_to_numbers[column]
 
-for i in range(7):
-    print(f'Turn {i+1}:')
-    
-    print('Player Board')
-    for row in player_grid:
-        for item in row:
-            print('{:<7}'.format(item), end='')
-        print()
-        
-    # Choose a random item from the grid
-    random_row = random.choice(player_grid)
-    random_item = random.choice(random_row)
-    # this is to see computer choice
-    print(f'The randomly chosen item is: {random_item}')
+# Function to count the number of hit ships
+def count_hit_ships(board):
+    count = 0
+    for row in board:
+        for column in row:
+            if column == "X":
+                count += 1
+    return count
 
-    print('Computer Board')
-    for row in computer_grid:
-        for item in row:
-            print('{:<7}'.format(item), end='')
-        print()
-
-    # Choose a random item from the grid
-    random_row = random.choice(computer_grid)
-    random_item = random.choice(random_row)
-    # this is to see computer choice
-    print(f'The randomly chosen item is: {random_item}')
-
-    
-
-    # Ask the user to choose a cell
-    print('GUIDE')
-    print('First number in the grid is row and second is column so choose the row and column accordingly')
-    print('For Example row 1 and column 1 would be 11 in grid')
-    user_row = int(input('Enter the row number: '))
-    user_col = int(input('Enter the column number: '))
-
-    # Check if the user's choice is valid
-    if user_row < 1 or user_row > len(computer_grid) or user_col < 1 or user_col > len(computer_grid[0]):
-        print('Invalid input! Row and column numbers must be within grid.')
-    else:
-        user_choice = computer_grid[user_row-1][user_col-1]
-        print(f'Your choice is: {user_choice}')
-        
-        # Compare user's choice and computer's choice
-        if user_choice == random_item:
-            print('Congratulations! You guessed the same number as the computer!')
-            computer_grid[user_row-1][user_col-1] = 'X'
+# Main game loop
+if __name__ == "__main__":
+    # Create the ships on the hidden board
+    create_ships(HIDDEN_BOARD)
+    # Set the number of turns to 10 and score to 0
+    turns = 10
+    score = 0
+    while turns > 0:
+        # Print the guess board and get the row and column input from the player
+        print('Guess a battleship location')
+        print_board(GUESS_BOARD)
+        row, column = get_ship_location()
+        # Check if the player has already guessed that location
+        if GUESS_BOARD[row][column] == "-":
+            print("You guessed that one already.")
+        # Check if the player has hit a ship
+        elif HIDDEN_BOARD[row][column] == "X":
+            print("Hit")
+            GUESS_BOARD[row][column] = "X" 
+            score += 1
+            turns -= 1  
+        # If the player missed the ship
         else:
-            print('torpedo missed')
-            
-    print()
+            print("MISS!")
+            GUESS_BOARD[row][column] = "-"  
+            turns -= 1     
+        if count_hit_ships(GUESS_BOARD) == 5:
+            print("You win!")
+            break
+        print("You have " + str(turns) + " turns left and your score is " + str(score))
+        if turns == 0:
+            print("GAME OVER")
+
+    
