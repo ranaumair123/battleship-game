@@ -40,12 +40,12 @@ def show_board(hit, miss, comp):
 
 # Function to get a shot from the user
 def get_shot():
-    show_board(hit, miss, comp,)
+    show_board(hit, miss, comp)
     guesses = hit + miss + comp
     ok = "n"
     while ok == "n":
         try:
-            shot = input("Please enter your guess for example 00 , 10, 99: ")
+            shot = input("Please enter your guess for example 00 , 10, 99:\n")
             shot = int(shot)
             if shot < 0 or shot > 99:
                 print("Incorrect number, please try again")
@@ -53,10 +53,9 @@ def get_shot():
                 print("Incorrect number, this is used before")
             else:
                 ok = "y"
-                break
         except shot:
             print("Incorrect entry - please enter again")
-        return shot
+    return shot
 
 
 # Function to check if a shot hits a boat
@@ -79,12 +78,9 @@ def check_shot(shot, bt1, bt2, hit, miss, comp):
     else:
         miss.append(shot)
     return bt1, bt2, hit, miss, comp
-
-
-# this will generate boat 1 with 3
-
-
 # this will generate boat 1 with 3 coordinates
+
+
 while True:
     coordinate = random.randint(0, 96)
     horizontal = random.choice([True, False])
