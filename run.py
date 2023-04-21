@@ -46,6 +46,8 @@ def get_shot():
     while ok == "n":
         try:
             shot = input("Please enter your guess for example 00 , 10, 99:\n")
+            if not shot.isdigit():
+                raise ValueError("Incorrect, please enter only numbers")
             shot = int(shot)
             if shot < 0 or shot > 99:
                 print("Incorrect number, please try again")
@@ -53,10 +55,9 @@ def get_shot():
                 print("Incorrect number, this is used before")
             else:
                 ok = "y"
-        except shot:
-            print("Incorrect entry - please enter again")
+        except ValueError as e:
+            print(e)
     return shot
-
 
 # Function to check if a shot hits a boat
 def check_shot(shot, bt1, bt2, hit, miss, comp):
