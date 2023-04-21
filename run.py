@@ -1,21 +1,26 @@
 import random
-# Start the game
+
+
 hit = []
 miss = []
 comp = []
-shots = 0 
+shots = 0
+sank = []
+
 
 def show_board(hit, miss, comp):
-    print("Welcome to Batlleship game")
+    print("Welcome to Battleship game")
     print("Rules of the Game")
-    print("1:You have 50 Shots to  destory 2 enemy ships")
+    print("1:You have 50 Shots to destory 2 enemy ships")
     print("2:x on the board mean you missed the ship")
     print("3:o on the board mean you hit a part of ship")
     print("4:O on the board mean you destroyed the ship")
-    
+
     print("SHOTS USED")
     print(shots)
-    
+    print("SHIPS DESTROYED")
+    print(len(sank))
+
     print("    0  1  2  3  4  5  6  7  8  9")
     place = 0
     for x in range(10):
@@ -24,23 +29,23 @@ def show_board(hit, miss, comp):
             ch = " _ "
             if place in miss:
                 ch = " x "
-            elif place in hit:    
+            elif place in hit:
                 ch = " o "
             elif place in comp:
                 ch = " O "
-            row = row + ch 
+            row = row + ch
             place = place + 1
-        print(x,"",row)
+        print(x, "", row)
 
 
 # Function to get a shot from the user
 def get_shot():
     show_board(hit, miss, comp,)
-
+    guesses = hit + miss + comp
     ok = "n"
     while ok == "n":
         try:
-            shot = input("Please enter your guess: ")
+            shot = input("Please enter your guess for example 00 , 10, 99: ")
             shot = int(shot)
             if shot < 0 or shot > 99:
                 print("Incorrect number, please try again")
@@ -49,62 +54,70 @@ def get_shot():
             else:
                 ok = "y"
                 break
-        except:
+        except shot:
             print("Incorrect entry - please enter again")
-    return shot
+        return shot
 
-# Function to display the game board
 
 # Function to check if a shot hits a boat
-def check_shot(shot, boat1, boat2, hit, miss, comp):
-    if shot in boat1:
-        boat1.remove(shot)
-        if len(boat1) > 0:
+def check_shot(shot, bt1, bt2, hit, miss, comp):
+    if shot in bt1:
+        bt1.remove(shot)
+        if len(bt1) > 0:
             hit.append(shot)
         else:
             comp.append(shot)
-    elif shot in boat2:
-        boat2.remove(shot)
-        if len(boat2) > 0:
+            sank.append(1)
+
+    elif shot in bt2:
+        bt2.remove(shot)
+        if len(bt2) > 0:
             hit.append(shot)
         else:
             comp.append(shot)
+            sank.append(1)
     else:
         miss.append(shot)
-    return boat1, boat2, hit, miss, comp
+    return bt1, bt2, hit, miss, comp
+
+
+# this will generate boat 1 with 3
+
 
 # this will generate boat 1 with 3 coordinates
 while True:
-    start_coordinate = random.randint(0, 96)
+    coordinate = random.randint(0, 96)
     horizontal = random.choice([True, False])
     if horizontal:
-        boat1 = [start_coordinate, start_coordinate+1, start_coordinate+2]
+        bt1 = [coordinate, coordinate+1, coordinate+2]
     else:
-        boat1 = [start_coordinate, start_coordinate+10, start_coordinate+20]
-    if all(coord < 100 for coord in boat1):
+        bt1 = [coordinate, coordinate+10, coordinate+20]
+    if all(coord < 100 for coord in bt1):
         break
 
 # this will generate boat 2 with 4 coordinates
 while True:
-    start_coordinate = random.randint(0, 96)
+    coordinate = random.randint(0, 96)
     horizontal = random.choice([True, False])
     if horizontal:
-        boat2 = [start_coordinate, start_coordinate+1, start_coordinate+2, start_coordinate+3]
+        bt2 = [coordinate, coordinate+1, coordinate+2, coordinate+3]
     else:
-        boat2 = [start_coordinate, start_coordinate+10, start_coordinate+20, start_coordinate+30]
-    if all(coord < 100 for coord in boat2):
+        bt2 = [coordinate, coordinate+10, coordinate+20, coordinate+30]
+    if all(coord < 100 for coord in bt2):
         break
-
 
 
 # i in range will decide numbe of shots
 for i in range(50):
     guesses = hit + miss + comp
     shot = get_shot()
-    boat1, boat2, hit, miss, comp = check_shot(shot, boat1, boat2, hit, miss, comp)
+    bt1, bt2, hit, miss, comp = check_shot(shot, bt1, bt2, hit, miss, comp)
     show_board(hit, miss, comp,)
-    shots += 1 
-    if len(boat1) < 1 and len(boat2) < 1:
+    shots += 1
+    if len(bt1) < 1 and len(bt2) < 1:
         print("you won")
         print("game over")
+    elif shots == 50:
+        print("Shots finished")
+        print("you lost")
         break
